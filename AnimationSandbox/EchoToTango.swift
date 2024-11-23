@@ -8,22 +8,83 @@
 import SwiftUI
 
 
+struct EchoColor2: View {
+    @State private var offsetY: CGFloat = 0 // Vertical offset
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .frame(width: 120, height: 120)
+                .foregroundColor(ETColourScheme.lavender)
+                .mask( // Apply the mask here
+                    Circle()
+                        .frame(width: 120, height: 120) // Circle defining the mask area
+                )
+            Rectangle()
+                .frame(width: 120, height: 120)
+                .offset(y: offsetY)
+                .foregroundColor(ETColourScheme.lime)
+                .onTapGesture {
+                    withAnimation(.easeInOut(duration: 1).repeatForever(autoreverses: true)) { // Animate the vertical movement
+                        offsetY = offsetY == 0 ? 120 : 0 // Toggle position
+                    }
+                }
+                .frame(width: 120, height: 120) // Frame for the ZStack
+                .mask( // Apply the mask here
+                    Circle()
+                        .frame(width: 120, height: 120) // Circle defining the mask area
+                )
+        }
+        .clipped() // Ensures the content doesn't overflow
+    }
+}
+
+struct EchoColor: View {
+    @State private var offsetY: CGFloat = 0 // Vertical offset
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .frame(width: 120, height: 120)
+                .foregroundColor(ETColourScheme.lavender)
+                .mask( // Apply the mask here
+                    Circle()
+                        .frame(width: 120, height: 120) // Circle defining the mask area
+                )
+            Rectangle()
+                .frame(width: 120, height: 120)
+                .offset(y: offsetY)
+                .foregroundColor(ETColourScheme.lime)
+                .onAppear() {
+                    withAnimation(.easeInOut(duration: 1).repeatForever(autoreverses: true)) { // Animate the vertical movement
+                        offsetY = offsetY == 0 ? 200 : 0 // Toggle position
+                    }
+                }
+                .frame(width: 120, height: 120) // Frame for the ZStack
+                .mask( // Apply the mask here
+                    Circle()
+                        .frame(width: 120, height: 120) // Circle defining the mask area
+                )
+        }
+        .clipped() // Ensures the content doesn't overflow
+    }
+}
+
 struct EchoToTango: View {
     var body: some View {
         VStack{
-            HStack(spacing: 0) {
+            HStack(spacing: 10) {
                 EchoLeft()
-                EchoBar()
+//                EchoBar()
+//                    .padding(0)
                 EchoRight()
             }
             HStack{
-                EchoOverlap()
+                EchoZoom()
                 Rectangle()
                     .frame(width:120, height:120)
                     .opacity(0)
             }
             .padding(15)
-                Tango()
+            EchoColor()
             }
            .padding(15)
         }
@@ -32,6 +93,7 @@ struct EchoToTango: View {
 struct EchoBar: View {
     let color = ETColourScheme.lime
     @State var w = 0.0
+    
     var body: some View {
         VStack(spacing: 0) {
             Rectangle()
@@ -97,6 +159,30 @@ struct EchoCircle: View {
         }
 }
 
+
+struct EchoZoom: View {
+   @State private var isScaled = false
+
+    var body: some View {
+        ZStack{
+        RoundedRectangle(cornerRadius: 60)
+            .foregroundColor(ETColourScheme.lime)
+            .frame(width: 120, height: 120)
+        RoundedRectangle(cornerRadius: 35)
+            .foregroundColor(.white)
+            .frame(width: 70, height: 70)
+    }
+                .scaleEffect(isScaled ? 2.0 : 1.0) // Scale up or down based on state
+                .animation(.easeInOut, value: isScaled) // Implicit animation
+                .onTapGesture {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { // Delay by 0.5 seconds
+                        isScaled.toggle()
+                    }
+                }
+        }
+    }
+
+
 struct EchoOverlap: View {
     var body: some View {
         ZStack{
@@ -130,7 +216,8 @@ struct EchoToTango_Previews: PreviewProvider {
     static var previews: some View {
         HStack {
             //EchoBar()
-            EchoToTango()
+            //EchoToTango()
+            EchoColor2()
         }
 
     }
